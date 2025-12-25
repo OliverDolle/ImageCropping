@@ -57,6 +57,10 @@ A simple Python GUI application for cropping and resizing images.
 - Python 3.6+
 - Pillow (PIL) library
 
-## License
+## Screenshots
 
-This project is open source. Feel free to use and modify.
+### Main Interface
+![Main Interface](screenshots/main_interface.png)
+
+### Cropping in Action
+![Cropping Example](screenshots/cropping_example.png)
