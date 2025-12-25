@@ -11,6 +11,11 @@ class ImageCropper:
         self.upload_btn.pack()
         self.save_btn = Button(root, text="Save Cropped Image", command=self.save_image, state=DISABLED)
         self.save_btn.pack()
+        self.scale_var = DoubleVar(value=100.0)
+        self.scale_label = Label(root, text="Scale: 100%")
+        self.scale_label.pack()
+        self.scale_slider = Scale(root, from_=10, to=200, orient=HORIZONTAL, variable=self.scale_var, command=self.on_scale_change)
+        self.scale_slider.pack()
         self.canvas = Canvas(root, width=800, height=600)
         self.canvas.pack()
         self.pixel_label = Label(root, text="Pixel Size: ")
@@ -93,19 +98,28 @@ class ImageCropper:
         self.dragging = False
         self.resize = False
 
+    def on_scale_change(self, value):
+        self.scale_label.config(text=f"Scale: {int(float(value))}%")
+        self.update_info()
+
     def update_info(self):
         if not self.image:
             return
-        # Pixel size: width x height of crop in original
-        crop_width = int((self.rect_x2 - self.rect_x1) / self.scale)
-        crop_height = int((self.rect_y2 - self.rect_y1) / self.scale)
+        scale_factor = self.scale_var.get() / 100.0
+        # Pixel size: width x height of crop in original, scaled
+        crop_width = int((self.rect_x2 - self.rect_x1) / self.scale * scale_factor)
+        crop_height = int((self.rect_y2 - self.rect_y1) / self.scale * scale_factor)
         self.pixel_label.config(text=f"Pixel Size: {crop_width} x {crop_height}")
-        # File size: crop the image and get size
+        # File size: crop the image, scale, and get size
         left = max(0, int(self.rect_x1 / self.scale))
         top = max(0, int(self.rect_y1 / self.scale))
         right = min(self.image.size[0], int(self.rect_x2 / self.scale))
         bottom = min(self.image.size[1], int(self.rect_y2 / self.scale))
         cropped = self.image.crop((left, top, right, bottom))
+        if scale_factor != 1.0:
+            new_width = int(cropped.size[0] * scale_factor)
+            new_height = int(cropped.size[1] * scale_factor)
+            cropped = cropped.resize((new_width, new_height), Image.LANCZOS)
         # Save to bytes
         buf = io.BytesIO()
         cropped.save(buf, format='JPEG')
@@ -123,11 +137,16 @@ class ImageCropper:
             return
         file_path = filedialog.asksaveasfilename(defaultextension=".jpg", filetypes=[("JPEG", "*.jpg"), ("PNG", "*.png"), ("BMP", "*.bmp"), ("GIF", "*.gif")])
         if file_path:
+            scale_factor = self.scale_var.get() / 100.0
             left = max(0, int(self.rect_x1 / self.scale))
             top = max(0, int(self.rect_y1 / self.scale))
             right = min(self.image.size[0], int(self.rect_x2 / self.scale))
             bottom = min(self.image.size[1], int(self.rect_y2 / self.scale))
             cropped = self.image.crop((left, top, right, bottom))
+            if scale_factor != 1.0:
+                new_width = int(cropped.size[0] * scale_factor)
+                new_height = int(cropped.size[1] * scale_factor)
+                cropped = cropped.resize((new_width, new_height), Image.LANCZOS)
             # Determine format from extension
             ext = file_path.split('.')[-1].lower()
             if ext == 'jpg':
