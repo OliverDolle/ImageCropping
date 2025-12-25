@@ -135,9 +135,14 @@ class ImageCropper:
             unit = "KB"
         self.file_label.config(text=f"File Size: {size:.2f} {unit}")
         # Update preview
-        thumb = cropped.copy()
-        thumb.thumbnail((200, 200))
-        self.preview_photo = ImageTk.PhotoImage(thumb)
+        if cropped.size[0] <= 200 and cropped.size[1] <= 200:
+            # Upscale small images to 200x200 with pixelation
+            preview = cropped.resize((200, 200), Image.NEAREST)
+        else:
+            # Downscale large images to fit 200x200
+            preview = cropped.copy()
+            preview.thumbnail((200, 200))
+        self.preview_photo = ImageTk.PhotoImage(preview)
         self.preview_label.config(image=self.preview_photo, text="")
 
     def save_image(self):
