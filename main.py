@@ -18,12 +18,15 @@ class ImageCropper:
         self.scale_slider.pack()
         self.canvas = Canvas(root, width=800, height=600)
         self.canvas.pack()
+        self.preview_label = Label(root, text="Preview:")
+        self.preview_label.pack()
         self.pixel_label = Label(root, text="Pixel Size: ")
         self.pixel_label.pack()
         self.file_label = Label(root, text="File Size: ")
         self.file_label.pack()
         self.image = None
         self.photo = None
+        self.preview_photo = None
         self.crop_rect = None
         self.dragging = False
         self.resize = False
@@ -131,6 +134,11 @@ class ImageCropper:
             size = size_bytes / 1024
             unit = "KB"
         self.file_label.config(text=f"File Size: {size:.2f} {unit}")
+        # Update preview
+        thumb = cropped.copy()
+        thumb.thumbnail((200, 200))
+        self.preview_photo = ImageTk.PhotoImage(thumb)
+        self.preview_label.config(image=self.preview_photo, text="")
 
     def save_image(self):
         if not self.image:
