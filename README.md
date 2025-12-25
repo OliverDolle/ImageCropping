@@ -59,8 +59,8 @@ A simple Python GUI application for cropping and resizing images.
 
 ## Screenshots
 
-### Main Interface
-![Main Interface](screenshots/main_interface.png)
-
 ### Cropping in Action
-![Cropping Example](screenshots/cropping_example.png)
+![Main Interface](screenshots/downscale.png)
+
+
+![Cropping Example](screenshots/upscale.png)
