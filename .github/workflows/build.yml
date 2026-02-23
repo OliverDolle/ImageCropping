@@ -8,6 +8,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -75,13 +78,24 @@ jobs:
         name: ImageCropper-macos
         path: dist/ImageCropper.app
 
-    - name: Create Release (on tag)
-      if: startsWith(github.ref, 'refs/tags/')
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          dist/ImageCropper.exe
-          dist/ImageCropper
-          dist/ImageCropper.app
+          artifacts/ImageCropper-windows/ImageCropper.exe
+          artifacts/ImageCropper-linux/ImageCropper
+          artifacts/ImageCropper-macos/ImageCropper.app
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
