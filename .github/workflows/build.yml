@@ -56,21 +56,21 @@ jobs:
 
     - name: Upload artifact (Windows)
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ImageCropper-windows
         path: dist/ImageCropper.exe
 
     - name: Upload artifact (Linux)
       if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ImageCropper-linux
         path: dist/ImageCropper
 
     - name: Upload artifact (macOS)
       if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ImageCropper-macos
         path: dist/ImageCropper.app
